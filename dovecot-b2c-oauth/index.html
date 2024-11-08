@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base href="/">
+  <title>
+    
+      Setting up Dovecot and Roundcube with Azure Active Directory B2C
+    
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="shortcut icon" href="/favicon.ico">
+  
+<link rel="stylesheet" href="/css/app.css">
+
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro'>
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+<body>
+  <nav class="app-nav no-print">
+  
+    
+      <a href="/.">home</a>
+    
+  
+    
+      <a href="/archives/">archive</a>
+    
+  
+    
+      <a href="/about/">about</a>
+    
+  
+    
+      <a target="_blank" rel="noopener" href="https://git.e.tern.al/explore/repos">projects</a>
+    
+  
+    
+      <a href="/atom.xml">rss</a>
+    
+  
+</nav>
+
+  <main class="post">
+  <article>
+  <h1 class="article-title">
+    <a href="/dovecot-b2c-oauth/">Setting up Dovecot and Roundcube with Azure Active Directory B2C</a>
+  </h1>
+
+  <section class="article-meta">
+    <p class="article-date">September 14 2022</p>
+  </section>
+
+  <section class="article-entry">
+    <p>This post explains how to configure Roundcube that connects to Dovecot to fetch mails letting the user authenticate against an Azure Active Directory B2C.</p>
+<p><img src="dovecot-b2c-oauth/dovecot-b2c-oauth.png" alt="Nice diagram"></p>
+<h2 id="Azure-AD"><a href="#Azure-AD" class="headerlink" title="Azure AD"></a>Azure AD</h2><p>In Azure AD B2C we need to:</p>
+<ol>
+<li>Register an App for Roundcube</li>
+<li>Register an App for Dovecot</li>
+<li>Create a User Flow to log Users into Roundcube</li>
+<li>Create a resource owner password credential (ROPC) flow to log Users into Dovecot whit PLAIN</li>
+</ol>
+<h3 id="App-registrations"><a href="#App-registrations" class="headerlink" title="App registrations"></a>App registrations</h3><p>First of all let&#39;s register a new app in AAD App registrations for Roundcube:<br><img src="dovecot-b2c-oauth/app-registration.png" alt="app registration"></p>
+<p>Change the domain of the redirect uri to the domain of your Roundcube installation.</p>
+<p>Now let&#39;s create an OAuth client secret for Roundcube. Go to <code>Certificates and secrets</code> for the App we just registered, and create a new secret.<br><img src="dovecot-b2c-oauth/certs-and-secrets.png" alt="Certs and secrets"></p>
+<p>Save this secret for later, we will need it when configuring Roundcube.</p>
+<p>Do the same for Dovecot, but for the Dovecot app, under Advanced settings -&gt; Enable the following mobile and desktop flows, select Yes to treat the application as a public client.</p>
+<p><img src="dovecot-b2c-oauth/allow-public-client-flows.png" alt="Allow public client flows"></p>
+<p>Also, for the Dovecot app, we need to set <code>&quot;oauth2AllowImplicitFlow&quot;: true</code> in the App Manifest.</p>
+<p>This setting is required for the ROPC flow we will create in the next chapter.</p>
+<h3 id="Sign-in-up-and-ROPC-flow"><a href="#Sign-in-up-and-ROPC-flow" class="headerlink" title="Sign in/up and ROPC flow"></a>Sign in/up and ROPC flow</h3><p>Now let&#39;s configure the Sign in/up flow, so users can log in to Roundcube. But first we need to add a custom attribute for our users, that will hold the Dovecot username for login.<br><img src="dovecot-b2c-oauth/login-username.png" alt="Custom attr"></p>
+<p>How to populate this user attribute is left as exercise for the reader (use API connectors).</p>
+<p>And now create a new flow. Call it something you like (mine is called <code>B2C_1_SignUpIn</code>), and add the attribute as claim for Roundcube:<br><img src="dovecot-b2c-oauth/flow.png" alt="Flow"></p>
+<p>This flow is used by Roundcube to log users in.</p>
+<p>We need one more, to allow Dovecot to log users in with username and password for plain auth, but authenticating them against our B2C AD. To do that, we need to create a <a target="_blank" rel="noopener" href="https://learn.microsoft.com/en-us/azure/active-directory-b2c/add-ropc-policy?tabs=app-reg-ga&amp;pivots=b2c-user-flow">resource owner password credential flow</a>.</p>
+<p>Once created, add the custom user attribute to the application claims like for the flow created previously.</p>
+<p>We are done here. Next up is Roundcube.</p>
+<h2 id="Roundcube"><a href="#Roundcube" class="headerlink" title="Roundcube"></a>Roundcube</h2><p>Download and install it (at the time of writing the actual version is 1.6.0, and I tested everything with this version), and following <a target="_blank" rel="noopener" href="https://github.com/roundcube/roundcubemail/wiki/Configuration:-OAuth2">this</a> wiki page, we can configure OAuth.</p>
+<p>We just have to add some parameters in <code>roundcube/config/config.inc.php</code>:<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">// ----------------------------------</span><br><span class="line">// OAuth</span><br><span class="line">// ----------------------------------</span><br><span class="line"></span><br><span class="line">// Enable OAuth2 by defining a provider. Use &#x27;generic&#x27; here</span><br><span class="line">$config[&#x27;oauth_provider&#x27;] = &#x27;generic&#x27;;</span><br><span class="line"></span><br><span class="line">// Provider name to be displayed on the login button</span><br><span class="line">$config[&#x27;oauth_provider_name&#x27;] = &#x27;Simons mail server&#x27;;</span><br><span class="line"></span><br><span class="line">// Mandatory: OAuth client ID for your Roundcube installation</span><br><span class="line">$config[&#x27;oauth_client_id&#x27;] = &#x27;&lt;Roundcube app registration client id&gt;&#x27;;</span><br><span class="line"></span><br><span class="line">// Mandatory: OAuth client secret</span><br><span class="line">$config[&#x27;oauth_client_secret&#x27;] = &#x27;&lt;Roundcube client secret&gt;&#x27;;</span><br><span class="line"></span><br><span class="line">// Mandatory: URI for OAuth user authentication (redirect)</span><br><span class="line">$config[&#x27;oauth_auth_uri&#x27;] = &#x27;https://&lt;yourB2Cdomain&gt;.b2clogin.com/&lt;yourB2Cdomain&gt;.onmicrosoft.com/oauth2/v2.0/authorize?p=B2C_1_SignUpIn&#x27;;</span><br><span class="line"></span><br><span class="line">// Mandatory: Endpoint for OAuth authentication requests (server-to-server)</span><br><span class="line">$config[&#x27;oauth_token_uri&#x27;] = &#x27;https://&lt;yourB2Cdomain&gt;.b2clogin.com/&lt;yourB2Cdomain&gt;.onmicrosoft.com/B2C_1_SignUpIn/oauth2/v2.0/token&#x27;;</span><br><span class="line"></span><br><span class="line">// Optional: Endpoint to query user identity if not provided in auth response</span><br><span class="line">$config[&#x27;oauth_identity_uri&#x27;] = null;</span><br><span class="line"></span><br><span class="line">// Optional: disable SSL certificate check on HTTP requests to OAuth server</span><br><span class="line">// See http://docs.guzzlephp.org/en/stable/request-options.html#verify for possible values</span><br><span class="line">$config[&#x27;oauth_verify_peer&#x27;] = true;</span><br><span class="line"></span><br><span class="line">// Mandatory: OAuth scopes to request (space-separated string)</span><br><span class="line">$config[&#x27;oauth_scope&#x27;] = &#x27;&lt;Roundcube app registration client id&gt; openid&#x27;;</span><br><span class="line"></span><br><span class="line">// Optional: additional query parameters to send with login request (hash array)</span><br><span class="line">$config[&#x27;oauth_auth_parameters&#x27;] = [&#x27;nonce&#x27; =&gt; mt_rand()];</span><br><span class="line"></span><br><span class="line">// Optional: array of field names used to resolve the username within the identity information</span><br><span class="line">$config[&#x27;oauth_identity_fields&#x27;] = [&#x27;extension_PreferredLoginUsername&#x27;];</span><br><span class="line"></span><br><span class="line">// Boolean: automatically redirect to Auth login when opening Roundcube without a valid session</span><br><span class="line">$config[&#x27;oauth_login_redirect&#x27;] = true;</span><br></pre></td></tr></table></figure></p>
+<p>That&#39;s it for Roundcube.</p>
+<h2 id="Dovecot"><a href="#Dovecot" class="headerlink" title="Dovecot"></a>Dovecot</h2><p>Dovecot docs are <a target="_blank" rel="noopener" href="https://doc.dovecot.org/configuration_manual/authentication/oauth2/">here</a>. We need to configure <code>conf.d/10-auth.conf</code> like this:<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">auth_mechanisms = plain oauthbearer xoauth2</span><br><span class="line"></span><br><span class="line"># this is for oauth auth</span><br><span class="line">passdb &#123;</span><br><span class="line">  driver = oauth2</span><br><span class="line">  mechanisms = xoauth2 oauthbearer</span><br><span class="line">  args = /etc/dovecot/dovecot-oauth2.conf.ext</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># this is for plain auth</span><br><span class="line">passdb &#123;</span><br><span class="line">  driver = oauth2</span><br><span class="line">  mechanisms = plain login</span><br><span class="line">  args = /etc/dovecot/dovecot-oauth2.plain.conf.ext</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p><code>/etc/dovecot/dovecot-oauth2.conf.ext</code> looks like this:<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">tokeninfo_url = https://&lt;yourB2Cdomain&gt;.b2clogin.com/&lt;yourB2Cdomain&gt;.onmicrosoft.com/b2c_1_signupin/oauth2/v2.0/token?token=</span><br><span class="line">introspection_mode = local</span><br><span class="line">openid_configuration_url = https://&lt;yourB2Cdomain&gt;.b2clogin.com/&lt;yourB2Cdomain&gt;.onmicrosoft.com/B2C_1_SignUpIn/v2.0/.well-known/openid-configuration</span><br><span class="line">local_validation_key_dict = fs:posix:prefix=/etc/dovecot/keys/</span><br><span class="line">username_attribute = extension_PreferredLoginUsername</span><br></pre></td></tr></table></figure></p>
+<p>and <code>/etc/dovecot/dovecot-oauth2.plain.conf.ext</code> looks like this:<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">grant_url = https://&lt;yourB2Cdomain&gt;.b2clogin.com/&lt;yourB2Cdomain&gt;.onmicrosoft.com/b2c_1_ropc_auth/oauth2/v2.0/token?scope=&lt;Dovecot app registration client id&gt;</span><br><span class="line">client_id = &lt;Dovecot app registration client id&gt;</span><br><span class="line">client_secret = &lt;Dovecot client secret&gt;</span><br><span class="line">username_attribute = extension_PreferredLoginUsername</span><br><span class="line">use_grant_password = yes</span><br><span class="line">introspection_mode = local</span><br><span class="line">local_validation_key_dict = fs:posix:prefix=/etc/dovecot/keys/</span><br></pre></td></tr></table></figure></p>
+<p>Now we need to populate <code>/etc/dovecot/keys/</code> with the keys from our OAuth provider (AAD). Go to <code>https://&lt;yourB2Cdomain&gt;.b2clogin.com/&lt;yourB2Cdomain&gt;.onmicrosoft.com/b2c_1_signupin/discovery/v2.0/keys</code>, and copy the <code>keys</code> key. It&#39;s something like this:<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;kid&quot;:&quot;X5eXk4xyo...aNk&quot;,&quot;nbf&quot;:1493763266,&quot;use&quot;:&quot;sig&quot;,&quot;kty&quot;:&quot;RSA&quot;,&quot;e&quot;:&quot;AQAB&quot;,&quot;n&quot;:&quot;tVKUtcx_...Xw&quot;&#125;</span><br></pre></td></tr></table></figure><br>Create a file <code>/etc/dovecot/keys/&lt;App registration client id&gt;/RS256/&lt;kid&gt;</code> and put the key you copied above in that file.</p>
+<h2 id="The-end"><a href="#The-end" class="headerlink" title="The end"></a>The end</h2><p>Restart Apache/Nginx, restard Dovecot, and try to log in. Everything should work.</p>
+<p>Nice.</p>
+<p>Bye.</p>
+
+  </section>
+</article>
+
+  <div class="sharing grid">
+  <section class="profile grid-item grid">
+    <img class="avatar" src="https://secure.gravatar.com/avatar/8a0fbc625b09e72d7a8f2e77ac582e66?s=180&d=identicon" alt="avatar" />
+    <div class="grid-item">
+      <p class="title"> Simons stuff </p>
+      <p class="subtitle">  </p>
+    </div>
+  </section>
+</div>
+
+
+  
+</main>
+
+</body>
+</html>

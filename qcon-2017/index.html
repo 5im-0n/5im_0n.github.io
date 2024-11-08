@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base href="/">
+  <title>
+    
+      QCon London 2017 takeaway points
+    
+  </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="shortcut icon" href="/favicon.ico">
+  
+<link rel="stylesheet" href="/css/app.css">
+
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Source+Code+Pro'>
+<meta name="generator" content="Hexo 6.0.0"></head>
+
+<body>
+  <nav class="app-nav no-print">
+  
+    
+      <a href="/.">home</a>
+    
+  
+    
+      <a href="/archives/">archive</a>
+    
+  
+    
+      <a href="/about/">about</a>
+    
+  
+    
+      <a target="_blank" rel="noopener" href="https://git.e.tern.al/explore/repos">projects</a>
+    
+  
+    
+      <a href="/atom.xml">rss</a>
+    
+  
+</nav>
+
+  <main class="post">
+  <article>
+  <h1 class="article-title">
+    <a href="/qcon-2017/">QCon London 2017 takeaway points</a>
+  </h1>
+
+  <section class="article-meta">
+    <p class="article-date">March 06 2017</p>
+  </section>
+
+  <section class="article-entry">
+    <p><img src="qcon-2017/DSC_0545.JPG" alt="qcon london 2017"><br><img src="qcon-2017/DSC_0565.JPG" alt="qcon london 2017"><br><img src="qcon-2017/DSC_0548.JPG" alt="qcon london 2017"><br><img src="qcon-2017/DSC_0549.JPG" alt="qcon london 2017"><br>here is the schedule: <a target="_blank" rel="noopener" href="https://qconlondon.com/london-2017/schedule/tabular">https://qconlondon.com/london-2017/schedule/tabular</a></p>
+<h1 id="so-what-was-it-all-about"><a href="#so-what-was-it-all-about" class="headerlink" title="so what was it all about?"></a>so what was it all about?</h1><p><a href="/qcon-2017/#Engineering-You">what is qcon?</a></p>
+<ul>
+<li>key topic: performance</li>
+<li>keywords: serverless, automation, scaling, iot, containers, git, devops, ci, mobile, javascript</li>
+<li>more keywords: drive change, innovation, diversity and equality in the workplace</li>
+<li>waterfall is absolutely dead: agile/scrum is what it is since 2008. since 2012 it&#39;s about scaling agile and scrum.</li>
+<li>soap is absolutely dead. nobody even mentioned it. rest/swagger is what it is.</li>
+</ul>
+<h1 id="day-1"><a href="#day-1" class="headerlink" title="day 1"></a>day 1</h1><h2 id="Security-War-Stories-The-Battle-For-The-Internet-of-Things"><a href="#Security-War-Stories-The-Battle-For-The-Internet-of-Things" class="headerlink" title="Security War Stories: The Battle For The Internet of Things"></a>Security War Stories: The Battle For The Internet of Things</h2><p>security is important, iot things are not secure, i can change your radio station and view your webcams, blablayaddayadda</p>
+<h2 id="Microservices-At-The-Heart-of-BBC-iPlayer"><a href="#Microservices-At-The-Heart-of-BBC-iPlayer" class="headerlink" title="Microservices At The Heart of BBC iPlayer"></a>Microservices At The Heart of BBC iPlayer</h2><p><img src="qcon-2017/bbc/DSC_0551.JPG" alt=""><br>they had a big monolythic java app that did not meet demand.<br><img src="qcon-2017/bbc/DSC_0552.JPG" alt=""><br>so they had to do something: refactor the app to a lot of little apps.<br>had to pre-warm the caches before even putting the service online.<br><img src="qcon-2017/bbc/DSC_0553.JPG" alt=""><br>step by step re-architecturing the app.<br><img src="qcon-2017/bbc/DSC_0554.JPG" alt=""><br>reasons to choose node:</p>
+<ul>
+<li>it&#39;s fast</li>
+<li>they already knew js</li>
+</ul>
+<p>response times before where 5seconds, with node 10ms - 100ms now is slow.<br>parts of the app are now</p>
+<ul>
+<li>independently deployable</li>
+<li>independently scalable</li>
+<li>independently failable</li>
+</ul>
+<p>(almost)</p>
+<p><img src="qcon-2017/bbc/DSC_0555.JPG" alt=""><br>team workflow is now better: everyone can focus just on the piece that concerns them.<br>tdd development with pairing. there is a test for almost everything, and everyone has a backup. no one person owns a service anymore. the team owns all of the services.<br>problems faced: redis was a central point of everything, so there was no confidence in changing something that involved redis. solution: abstract redis with an api, and use multiple redis databases, one for episodes, one for shared stuff, ...<br>use yeoman to automate the creation of the small apps. this reduced the ammount of configuration essentially to 0.<br>seyren to check/monitor services.<br><img src="qcon-2017/bbc/DSC_0556.JPG" alt=""><br>everything over https and keep-alive internally.<br>deleting the shared database: we checked if something writes or reads from it. but there was some obscure software that was reading and writing to it every 40 minutes... deplyed a fix for it.<br>every piece of software now has it&#39;s own db, and is autonomous.<br>everything is consistent with node and js on the frontend. no context switching.<br><img src="qcon-2017/bbc/DSC_0557.JPG" alt=""><br>the team is just 4 people, with no pm.<br>consumer contracts help a lot with independence between client and api services.<br>moving from redis to postgres for some service because the requirements become more complex. redis is just a store, postgres can have complex sql reports.<br><img src="qcon-2017/bbc/DSC_0558.JPG" alt=""></p>
+<h2 id="The-Hitchhiker-39-s-Guide-to-Serverless-Javascript"><a href="#The-Hitchhiker-39-s-Guide-to-Serverless-Javascript" class="headerlink" title="The Hitchhiker&#39;s Guide to Serverless Javascript"></a>The Hitchhiker&#39;s Guide to Serverless Javascript</h2><p><img src="qcon-2017/serverless/DSC_0559.JPG" alt=""><br>we are not talking about servers anymore, but about platforms.<br><img src="qcon-2017/serverless/DSC_0560.JPG" alt=""><br><img src="qcon-2017/serverless/DSC_0561.JPG" alt=""><br><img src="qcon-2017/serverless/DSC_0562.JPG" alt=""><br>the talk is mainly about amazon aws.<br>api gateway is routing as a service. this is what makes serverless ultimately possible.<br>swagger or &quot;click around a lot&quot;.<br>so the architecture is more or less html + js -&gt; api gateway -&gt; lamda<br><img src="qcon-2017/serverless/DSC_0563.JPG" alt=""></p>
+<p>would be nice to have in our infra!</p>
+<p>why serverless?</p>
+<ul>
+<li>ops: <del>#noops</del></li>
+<li>#lessops</li>
+<li>benchmarks</li>
+<li>fallbacks</li>
+<li>load testing</li>
+<li>monitornig</li>
+<li>scaling: up AND down</li>
+<li>single function deployments</li>
+</ul>
+<p>vendor lockin? yes, it is a problem. serverless framework tries to abstract that away, hopfully we will get there.  </p>
+<p>granularity on functions as a service compared to microservices: you can do microservices with faas.</p>
+<h2 id="Enabling-Innovation-at-Uber-Speed"><a href="#Enabling-Innovation-at-Uber-Speed" class="headerlink" title="Enabling Innovation at Uber Speed"></a>Enabling Innovation at Uber Speed</h2><p><img src="qcon-2017/serverless/DSC_0566.JPG" alt=""></p>
+<p>innovation is really important for uber, the team has to enable it.</p>
+<p><img src="qcon-2017/uber/DSC_0567.JPG" alt=""><br><img src="qcon-2017/uber/DSC_0568.JPG" alt=""><br><img src="qcon-2017/uber/DSC_0569.JPG" alt=""></p>
+<p>workation<br><img src="qcon-2017/uber/DSC_0570.JPG" alt=""></p>
+<p>you go there, and work on your idea for a week/10 days, and then you come back.<br>&quot;find the perfect match both in terms of skill and cultural fit&quot;<br>...<br>we hire great people, and we need to empower them and keep them motivated, and blabla...  </p>
+<p>it&#39;s ok to fail. postmortems are really important because we want to understand what went wrong.  </p>
+<h2 id="Continuous-Performance-Testing"><a href="#Continuous-Performance-Testing" class="headerlink" title="Continuous Performance Testing"></a>Continuous Performance Testing</h2><p><img src="qcon-2017/cpt/DSC_0573.JPG" alt=""><br><img src="qcon-2017/cpt/DSC_0575.JPG" alt=""></p>
+<p>once upon a time, when there was a new release, on the lunch break everybody logged on and tested the app.<br>now we use tools to do it, and run it as part of jenkins or our ci.<br>keep the numbers, so we see how the speed changes over time. if there are regressions we can handle them.  </p>
+<p>different types of benchmarks and when they make sense:<br><img src="qcon-2017/cpt/DSC_0576.JPG" alt=""><br><img src="qcon-2017/cpt/DSC_0577.JPG" alt=""><br><img src="qcon-2017/cpt/DSC_0578.JPG" alt=""></p>
+<h2 id="Async-or-Bust"><a href="#Async-or-Bust" class="headerlink" title="Async or Bust!?"></a>Async or Bust!?</h2><p><img src="qcon-2017/async/DSC_0579.JPG" alt=""><br><img src="qcon-2017/async/DSC_0580.JPG" alt=""><br><img src="qcon-2017/async/DSC_0581.JPG" alt=""></p>
+<p>so async or sync? all we want is the simplicity of sync to reason about the code, but the efficiency of asncronicity: do something while we wait.<br>talk goes on on how to handle async code, but in the end async is just a different paradigm:</p>
+<ul>
+<li>callbacks, <code>async</code>, ...</li>
+<li>handle errors like events</li>
+</ul>
+<p><img src="qcon-2017/async/DSC_0582.JPG" alt=""></p>
+<h2 id="Rebuilding-The-Monolith-With-Composable-Apps"><a href="#Rebuilding-The-Monolith-With-Composable-Apps" class="headerlink" title="Rebuilding The Monolith With Composable Apps"></a>Rebuilding The Monolith With Composable Apps</h2><p><img src="qcon-2017/monolyths/DSC_0583.JPG" alt=""></p>
+<p>skybet had a php app that was really convulted and made of bad code, but it worked and was used a lot.<br><img src="qcon-2017/monolyths/DSC_0584.JPG" alt=""><br><img src="qcon-2017/monolyths/DSC_0585.JPG" alt=""><br><img src="qcon-2017/monolyths/DSC_0587.JPG" alt=""><br><img src="qcon-2017/monolyths/DSC_0588.JPG" alt=""><br><img src="qcon-2017/monolyths/DSC_0589.JPG" alt=""><br><img src="qcon-2017/monolyths/DSC_0590.JPG" alt=""></p>
+<p>they needed to implement some things that could not be done with the old architecture (live updates, be fast, ...), so they choose a new architecture based on the same old js -&gt; api -&gt; db, and started to refactor pieces of the old app, until most of the old app was made using the new tech (openkat!).</p>
+<p><img src="qcon-2017/monolyths/DSC_0591.JPG" alt=""></p>
+<p>with react they could partially do that.</p>
+<h1 id="day-2"><a href="#day-2" class="headerlink" title="day 2"></a>day 2</h1><h2 id="Engineering-You"><a href="#Engineering-You" class="headerlink" title="Engineering You"></a>Engineering You</h2><p>QCon tries to make you stay one step ahead of the adoption curve.<br><img src="qcon-2017/DSC_0593.JPG" alt=""><br><img src="qcon-2017/DSC_0594.JPG" alt=""></p>
+<p>Keynote: we need to be more inclusive in our industry.</p>
+<h2 id="Architectural-Overhaul-Ad-Serving-Spotify-Scale"><a href="#Architectural-Overhaul-Ad-Serving-Spotify-Scale" class="headerlink" title="Architectural Overhaul: Ad Serving @Spotify Scale"></a>Architectural Overhaul: Ad Serving @Spotify Scale</h2><p><img src="qcon-2017/spotify/DSC_0597.JPG" alt=""><br><img src="qcon-2017/spotify/DSC_0598.JPG" alt=""><br>the ad serving at spotify is a powerful messaging platform:</p>
+<p><img src="qcon-2017/spotify/DSC_0599.JPG" alt=""><br><img src="qcon-2017/spotify/DSC_0600.JPG" alt=""></p>
+<p>two main parts: the client and the ad server.  </p>
+<p>the ad server had to be refactored because</p>
+<ul>
+<li>it had logic in the client</li>
+<li>did not scale</li>
+</ul>
+<p><img src="qcon-2017/spotify/DSC_0601.JPG" alt=""></p>
+<p>how? keep the existing api so the change is transparent for the client.<br>took about 18 months.  </p>
+<p>in the second stage the client was replaced.<br>it was a big monolyth that was refactored into services.  </p>
+<p><img src="qcon-2017/spotify/DSC_0602.JPG" alt=""></p>
+<p>so the logic was independent and we could change things without breaking completely unrelated things.  </p>
+<h2 id="Scaling-Facebook-Live-Videos-to-a-Billion-Users"><a href="#Scaling-Facebook-Live-Videos-to-a-Billion-Users" class="headerlink" title="Scaling Facebook Live Videos to a Billion Users"></a>Scaling Facebook Live Videos to a Billion Users</h2><p><img src="qcon-2017/facebook/DSC_0604.JPG" alt=""><br><img src="qcon-2017/facebook/DSC_0606.JPG" alt=""></p>
+<p>1.23 billio access facebook every day.<br>we have to make sure there people get the best experience possible<br>facebook live is used to share moments with followers as they are happening.<br>everything started at a hackaton in april 2015. a hackaton at facebook is an short event where some people come together and do something. people are asked not to do work related things during hackathons.<br>a few months later afeter the hackathon &quot;mentions&quot; launched in august 2015. in december 2015 &quot;users&quot; launched.<br>so from 0 to production in 8 months. and everything we launch has to scale to 1 billion users.  </p>
+<p><img src="qcon-2017/facebook/DSC_0607.JPG" alt=""></p>
+<p>there are local pops where users connect, and pops send data between them on big pipes.<br>facebook live is different from other video platforms, because</p>
+<ul>
+<li>the videos are created in real time and can thus not be cached</li>
+<li>we do not know what video becomes most pupular</li>
+</ul>
+<p>we want to go from 0 to production in 4 months and to all users in 8 months.</p>
+<p>choosing a protocol for live video:<br><img src="qcon-2017/facebook/DSC_0608.JPG" alt=""><br><img src="qcon-2017/facebook/DSC_0609.JPG" alt=""></p>
+<p>broadcast client -&gt; pop -&gt; datacenter<br>the pop has scriptable logic: for example it can decide on wich datacenter to store the video based on load balancing logic.  </p>
+<p>complicated logic with video ids to handle cell phone disconnections and datacenter encoders downtime.  </p>
+<p>low bandwith has to be handled with adaptive bitrate and buffering on the client.<br><img src="qcon-2017/facebook/DSC_0610.JPG" alt=""></p>
+<h2 id="Shaving-My-Head-Made-Me-A-Better-Programmer"><a href="#Shaving-My-Head-Made-Me-A-Better-Programmer" class="headerlink" title="Shaving My Head Made Me A Better Programmer"></a>Shaving My Head Made Me A Better Programmer</h2><p>A female github employee had the impression she was not beeing taken seriously by her male coworkers, so she shaved her head and saw that people started to ask her technical questions.<br><img src="qcon-2017/shave/DSC_0611.JPG" alt=""></p>
+<p>Talk about why a diverse environment is important and how to archive it.<br><img src="qcon-2017/shave/DSC_0612.JPG" alt=""><br><img src="qcon-2017/shave/DSC_0613.JPG" alt=""><br><img src="qcon-2017/shave/DSC_0614.JPG" alt=""><br><img src="qcon-2017/shave/DSC_0615.JPG" alt=""></p>
+<h2 id="cgroupv2-Linux-39-s-New-Unified-Control-Group-System"><a href="#cgroupv2-Linux-39-s-New-Unified-Control-Group-System" class="headerlink" title="cgroupv2: Linux&#39;s New Unified Control Group System"></a>cgroupv2: Linux&#39;s New Unified Control Group System</h2><p><img src="qcon-2017/cgroups/DSC_0617.JPG" alt=""></p>
+<p>why care about cgroups</p>
+<ul>
+<li>100.000+ servers</li>
+<li>many thausands of services</li>
+<li>wanto ro limit failure domains</li>
+</ul>
+<p>need to limit resources to make them available to stuff that needs it<br><img src="qcon-2017/cgroups/DSC_0618.JPG" alt=""><br><img src="qcon-2017/cgroups/DSC_0619.JPG" alt=""><br><img src="qcon-2017/cgroups/DSC_0620.JPG" alt=""></p>
+<p><a target="_blank" rel="noopener" href="https://www.kernel.org/doc/Documentation/cgroup-v2.txt">https://www.kernel.org/doc/Documentation/cgroup-v2.txt</a></p>
+<p>use at fb:<br><img src="qcon-2017/cgroups/DSC_0621.JPG" alt=""></p>
+<h2 id="Multi-host-Multi-network-Persistent-Containers"><a href="#Multi-host-Multi-network-Persistent-Containers" class="headerlink" title="Multi-host, Multi-network Persistent Containers"></a>Multi-host, Multi-network Persistent Containers</h2><p>starts with the conclusion :)<br><img src="qcon-2017/containers-state/DSC_0623.JPG" alt=""></p>
+<p>apps in containers are stateless, but databases and filesystems sometimes need state.</p>
+<p>traditional (broken) development model<br><img src="qcon-2017/containers-state/DSC_0624.JPG" alt=""></p>
+<p>broken because once stuff lands in production it breaks in subtle ways - fixed with containers.</p>
+<p>so how do we keep state with containers?<br>using the cloud is not a great idea, because if you are going to become vendor dependent just buy in on that vendor and use them for everything.<br><img src="qcon-2017/containers-state/DSC_0625.JPG" alt=""><br><img src="qcon-2017/containers-state/DSC_0626.JPG" alt=""></p>
+<p>two ways to map persistent storage:<br>network attached: use a network fs like ciph<br>local attached: docker has <code>--volumes-from</code> to use containers that contain only storage to use for database containers.  </p>
+<p>aerospike:<br><img src="qcon-2017/containers-state/DSC_0627.JPG" alt=""></p>
+<p>just expose the aerospike with haproxy on the internet<br><img src="qcon-2017/containers-state/DSC_0628.JPG" alt=""></p>
+<p>summary<br><img src="qcon-2017/containers-state/DSC_0629.JPG" alt=""></p>
+<h2 id="Dev-to-Prod-in-5-minutes-Is-Your-Company-Ready"><a href="#Dev-to-Prod-in-5-minutes-Is-Your-Company-Ready" class="headerlink" title="Dev to Prod in 5 minutes: Is Your Company Ready?"></a>Dev to Prod in 5 minutes: Is Your Company Ready?</h2><p><img src="qcon-2017/5mins/DSC_0630.JPG" alt=""></p>
+<p>the standard git development pipeline<br><img src="qcon-2017/5mins/DSC_0631.JPG" alt=""></p>
+<p>but people don&#39;t understand it.<br>cultural changes are hard. at netflix if you deploy it you own it.<br>if you try to bring change in the company, think of you as someone who can not do this by yourself, nobody listens to you, you don&#39;t have the influence.  </p>
+<ul>
+<li>choose allies</li>
+<li>build the right team (take the people that read hacker news, that look at now technologies, that go to conferences, ...)</li>
+<li>choose the right project</li>
+<li>small iterations</li>
+<li>embrace failure (the project may fail, but you will see what went wrong, iterate)</li>
+<li>be ready for inception (people don&#39;t like change, but when they see git push and brrrr they will come)</li>
+<li>seek professional help (the idea is that you are going to be the baseline for the company, so if you start with a bad example, people will follow that, because they don&#39;t know. so try to make it right.)</li>
+</ul>
+<p><img src="qcon-2017/5mins/DSC_0632.JPG" alt=""></p>
+<h1 id="day-3"><a href="#day-3" class="headerlink" title="day 3"></a>day 3</h1><h2 id="Our-Concurrent-Past-Our-Distributed-Future"><a href="#Our-Concurrent-Past-Our-Distributed-Future" class="headerlink" title="Our Concurrent Past; Our Distributed Future"></a>Our Concurrent Past; Our Distributed Future</h2><p><img src="qcon-2017/DSC_0633.JPG" alt=""><br><img src="qcon-2017/DSC_0634.JPG" alt=""><br><img src="qcon-2017/DSC_0635.JPG" alt=""><br><img src="qcon-2017/DSC_0636.JPG" alt=""></p>
+<h2 id="Avoiding-Alerts-Overload-From-Microservices"><a href="#Avoiding-Alerts-Overload-From-Microservices" class="headerlink" title="Avoiding Alerts Overload From Microservices"></a>Avoiding Alerts Overload From Microservices</h2><p><img src="qcon-2017/alerts/DSC_0641.JPG" alt=""><br><img src="qcon-2017/alerts/DSC_0642.JPG" alt=""></p>
+<p>knowing when there is a problem is not enough. What you want is get a notification when you need to act. everything else is just noise.</p>
+<p><img src="qcon-2017/alerts/DSC_0643.JPG" alt=""></p>
+<p>monitoring microservices is very different than monitoring a monolyth. monitoring is harder because you have a lot more services.</p>
+<ol>
+<li>build a system that you can support.  </li>
+</ol>
+<p>basic tools:</p>
+<ul>
+<li>logging with log aggregation</li>
+<li>monitoring (we use nagios - financial times)</li>
+</ul>
+<p>only get an alert when we lose all services in the cluster. if one goes down, who cares as long as the system is up.<br>we had a very bad idea: make the monitoring screens shift automatically from page 1 -&gt; 2 and it was never on the page we needed.<br><img src="qcon-2017/alerts/DSC_0644.JPG" alt=""><br>a click takes you to more detail</p>
+<p>to graph stuff we use graphite -&gt; grafana</p>
+<p><img src="qcon-2017/alerts/DSC_0645.JPG" alt=""><br>we need to understand how to map the service requests to an http request, so we intoduced <code>transaction_ids</code>. made a java servlet filter so it&#39;s easy to integrate. so if you want to debug something, and know the transaction id, you can see all the services involved.</p>
+<ol>
+<li>concentrate on the stuff that matters</li>
+</ol>
+<p>if the first attempt failed, but the second got through, i don&#39;t really care about the first failure, because basically the thing worked. monitor the business services</p>
+<ol>
+<li>cultivate your alerts</li>
+</ol>
+<p>make sure each alert is great!</p>
+<p>bad:<br><img src="qcon-2017/alerts/DSC_0646.JPG" alt=""></p>
+<p>good:<br><img src="qcon-2017/alerts/DSC_0647.JPG" alt=""></p>
+<p>make sure alerts can&#39;t be missed.<br>use the right comunication channels.  </p>
+<p>support isn&#39;t just getting the system fixed: we need all to know what happened, how it was fixed, ...<br><img src="qcon-2017/alerts/DSC_0649.JPG" alt=""></p>
+<p><img src="qcon-2017/alerts/DSC_0650.JPG" alt=""><br>this is important because otherwise people build stuff that breaks.</p>
+<p>if you did&#39;nt get an alert, and things did go wrong, something is wrong. you need to fix it. setting up an alert is part of fixing the problem.</p>
+<p><img src="qcon-2017/alerts/DSC_0651.JPG" alt=""><br>you need to make sure that if things break, stuff still works and alerts work. so break things.  </p>
+<ul>
+<li>netflix chaos monkey</li>
+<li>ft chaos snail</li>
+</ul>
+<p>find ways to share what&#39;s changing. we do lot&#39;s of showcases.</p>
+<h2 id="Do-You-Really-Know-Your-Response-Times"><a href="#Do-You-Really-Know-Your-Response-Times" class="headerlink" title="Do You Really Know Your Response Times?"></a>Do You Really Know Your Response Times?</h2><p><img src="qcon-2017/response/DSC_0652.JPG" alt=""></p>
+<p><img src="qcon-2017/response/DSC_0655.JPG" alt=""></p>
+<p>so how do we measure these things?<br>sending the metrics from the app is not the solution because it can&#39;t measure itself.</p>
+<p><img src="qcon-2017/response/DSC_0656.JPG" alt=""></p>
+<p>dropwizard metrics library.  </p>
+<p>if something goes wrong, managers want numbers. and these numbers come from these dashboards.</p>
+<p><img src="qcon-2017/response/DSC_0657.JPG" alt=""></p>
+<h2 id="Real-World-Java-9"><a href="#Real-World-Java-9" class="headerlink" title="Real World Java 9"></a>Real World Java 9</h2><p>lot&#39;s of cool new features, one of the biggest one is <a target="_blank" rel="noopener" href="http://openjdk.java.net/projects/jigsaw/">jigsaw</a>.</p>
+<p>case study:<br><img src="qcon-2017/java9/DSC_0658.JPG" alt=""></p>
+<p>(speaker starts the ide and it takes forever. people laugh.)</p>
+<p>the speaker makes a jigsaw module. my impression is that it is a lot of pain: the speaker says there is a lot of trial &amp; error. no automatic creation for the module info file.</p>
+<p><img src="qcon-2017/java9/DSC_0659.JPG" alt=""></p>
+<p>speaker says it&#39;s not producion ready.</p>
+<p>speaker implements (live!) a reactive api.<br>at the end she says &quot;so now, it does exactly the same thing as before, but with slightly more code.&quot;</p>
+<p>more demos of java 9 features</p>
+<ul>
+<li>streams api</li>
+<li>collections convenience methods</li>
+<li>additions to interfaces</li>
+</ul>
+<p>takeaway points from the speaker: don&#39;t jigsaw jour app just jet. it&#39;s too early.</p>
+<h2 id="Monitoring-Serverless-Architectures"><a href="#Monitoring-Serverless-Architectures" class="headerlink" title="Monitoring Serverless Architectures"></a>Monitoring Serverless Architectures</h2><p><img src="qcon-2017/monitoring/DSC_0660.JPG" alt=""></p>
+<p><img src="qcon-2017/monitoring/DSC_0661.JPG" alt=""><br>&quot;sure! what went wrong? can i se the error?&quot;<br>&quot;we don&#39;t know&quot;<br>&quot;can i see the logs?&quot;<br>&quot;yeah, but you need to talk to the ops&quot;<br>and after a few hours you look like this<br><img src="qcon-2017/monitoring/DSC_0662.JPG" alt=""></p>
+<p>so why go serverless?</p>
+<ul>
+<li>it&#39;s more secure</li>
+<li>it scales up and down</li>
+<li>you don&#39;t need infrasructure on your own</li>
+<li>operations: there is a lot of talk about devops, ops, .. in the end it does not matter. you want the services to be up, and serverless gives you that</li>
+</ul>
+<p>serverless building blocks</p>
+<ul>
+<li>aws lamda</li>
+<li>aws api gateway</li>
+<li>aws dynamodb</li>
+<li>aws kinesis streams (pub-sub)</li>
+<li>lots more ...</li>
+</ul>
+<p><img src="qcon-2017/monitoring/DSC_0663.JPG" alt=""></p>
+<p>with cloudwatch you can monitor almost anything in all services you use.</p>
+<ul>
+<li>logging</li>
+<li>events</li>
+</ul>
+<p><img src="qcon-2017/monitoring/DSC_0664.JPG" alt=""></p>
+<p>health checks: route53<br>tracing: aws x-ray<br>auditing: aws cludtrail</p>
+<p><strong>the future</strong>: we are in the early stages, but we are headed to total visibility and observability. monitoring is becoming a comodity: it&#39;s just one more of the services.</p>
+<p><img src="qcon-2017/monitoring/DSC_0665.JPG" alt=""><br><img src="qcon-2017/monitoring/DSC_0666.JPG" alt=""></p>
+<h2 id="Big-Ideas-Decentralized-Storage"><a href="#Big-Ideas-Decentralized-Storage" class="headerlink" title="Big Ideas: Decentralized Storage"></a>Big Ideas: Decentralized Storage</h2><p><img src="qcon-2017/storage/DSC_0667.JPG" alt=""></p>
+<p>put data in the cloud without losing control.</p>
+<p><img src="qcon-2017/storage/DSC_0668.JPG" alt=""></p>
+<p>save the data on hosts that gain money if they store your data with blockchain smart contracts.</p>
+<p>ok it&#39;s late.. time to go home.</p>
+
+  </section>
+</article>
+
+  <div class="sharing grid">
+  <section class="profile grid-item grid">
+    <img class="avatar" src="https://secure.gravatar.com/avatar/8a0fbc625b09e72d7a8f2e77ac582e66?s=180&d=identicon" alt="avatar" />
+    <div class="grid-item">
+      <p class="title"> Simons stuff </p>
+      <p class="subtitle">  </p>
+    </div>
+  </section>
+</div>
+
+
+  
+</main>
+
+</body>
+</html>
